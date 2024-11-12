@@ -7,13 +7,12 @@ import {
   FilterDropdown,
   useSelect,
   List,
-
 } from "@refinedev/antd";
 
 import { Table, Space, Input, Select } from "antd";
 
 export const ListProducts = () => {
-  const { tableProps,sorters,filters } = useTable({
+  const { tableProps, filters, sorters } = useTable({
     sorters: { initial: [{ field: "id", order: "asc" }] },
     filters: {
       initial: [{ field: "category.id", operator: "eq", value: 2 }],
@@ -21,29 +20,36 @@ export const ListProducts = () => {
     syncWithLocation: true,
   });
 
-  const { selectProps } = useSelect({
-    resource: "categories",
-    defaultValue: getDefaultFilter("category.id", filters, "eq"),
-  });
-
   const { data: categories, isLoading } = useMany({
     resource: "categories",
     ids: tableProps?.dataSource?.map((product) => product.category?.id) ?? [],
   });
 
+  const { selectProps } = useSelect({
+    resource: "categories",
+    defaultValue: getDefaultFilter("category.id", filters, "eq"),
+  });
+
   return (
     <List>
-      
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title="ID"  sorter
-          defaultSortOrder={getDefaultSortOrder("id", sorters)} />
-        <Table.Column dataIndex="name" title="Name"  sorter
+        <Table.Column
+          dataIndex="id"
+          title="ID"
+          sorter
+          defaultSortOrder={getDefaultSortOrder("id", sorters)}
+        />
+        <Table.Column
+          dataIndex="name"
+          title="Name"
+          sorter
           defaultSortOrder={getDefaultSortOrder("name", sorters)}
           filterDropdown={(props) => (
             <FilterDropdown {...props}>
               <Input />
             </FilterDropdown>
-          )} />
+          )}
+        />
         <Table.Column
           dataIndex={["category", "id"]}
           title="Category"
@@ -55,17 +61,15 @@ export const ListProducts = () => {
             return categories?.data?.find((category) => category.id == value)
               ?.title;
           }}
-
           filterDropdown={(props) => (
             <FilterDropdown
               {...props}
-              // We'll store the selected id as number
               mapValue={(selectedKey) => Number(selectedKey)}
             >
               <Select style={{ minWidth: 200 }} {...selectProps} />
             </FilterDropdown>
           )}
-          defaultFilteredValue={getDefaultFilter("category.id", filters, "in")}
+          defaultFilteredValue={getDefaultFilter("category.id", filters, "eq")}
         />
         <Table.Column dataIndex="material" title="Material" />
         <Table.Column dataIndex="price" title="Price" />
