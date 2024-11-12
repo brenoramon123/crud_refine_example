@@ -6,6 +6,8 @@ import {
   getDefaultSortOrder,
   FilterDropdown,
   useSelect,
+  List,
+
 } from "@refinedev/antd";
 
 import { Table, Space, Input, Select } from "antd";
@@ -30,13 +32,18 @@ export const ListProducts = () => {
   });
 
   return (
-    <div>
-      <h1>Products</h1>
+    <List>
+      
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title="ID"  sorter
           defaultSortOrder={getDefaultSortOrder("id", sorters)} />
         <Table.Column dataIndex="name" title="Name"  sorter
-          defaultSortOrder={getDefaultSortOrder("name", sorters)} />
+          defaultSortOrder={getDefaultSortOrder("name", sorters)}
+          filterDropdown={(props) => (
+            <FilterDropdown {...props}>
+              <Input />
+            </FilterDropdown>
+          )} />
         <Table.Column
           dataIndex={["category", "id"]}
           title="Category"
@@ -48,6 +55,17 @@ export const ListProducts = () => {
             return categories?.data?.find((category) => category.id == value)
               ?.title;
           }}
+
+          filterDropdown={(props) => (
+            <FilterDropdown
+              {...props}
+              // We'll store the selected id as number
+              mapValue={(selectedKey) => Number(selectedKey)}
+            >
+              <Select style={{ minWidth: 200 }} {...selectProps} />
+            </FilterDropdown>
+          )}
+          defaultFilteredValue={getDefaultFilter("category.id", filters, "in")}
         />
         <Table.Column dataIndex="material" title="Material" />
         <Table.Column dataIndex="price" title="Price" />
@@ -61,6 +79,6 @@ export const ListProducts = () => {
           )}
         />
       </Table>
-    </div>
+    </List>
   );
 };
